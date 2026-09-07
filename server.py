@@ -1,3 +1,4 @@
+import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
@@ -470,7 +471,7 @@ print(
 
 
 server = ThreadingHTTPServer(
-    ("0.0.0.0", 8080),
+    ("0.0.0.0", int(os.environ.get("PORT", 8080))),
     Handler
 )
 
