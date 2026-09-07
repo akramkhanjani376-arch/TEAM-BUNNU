@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Bunny Plans</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    padding:20px;
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+}
+
+.container{
+    max-width:450px;
+    margin:auto;
+}
+
+.header{
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+    margin-bottom:20px;
+}
+
+.logo{
+    font-size:65px;
+}
+
+h1{
+    color:#6a11cb;
+    margin:8px 0;
+}
+
+.subtitle{
+    color:#777;
+}
+
+.plan{
+    background:white;
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:18px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.plan h2{
+    color:#6a11cb;
+    margin-top:0;
+}
+
+.price{
+    font-size:40px;
+    font-weight:bold;
+    color:#2575fc;
+    margin:15px 0;
+}
+
+.benefit{
+    margin:9px 0;
+    color:#555;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:0;
+    border-radius:14px;
+    background:#6a11cb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+}
+
+#payment{
+    display:none;
+    background:white;
+    margin-top:20px;
+    padding:25px;
+    border-radius:22px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.info{
+    background:#f3edff;
+    padding:18px;
+    border-radius:15px;
+    line-height:1.8;
+}
+
+input{
+    width:100%;
+    margin-top:15px;
+}
+
+#preview{
+    display:none;
+    width:100%;
+    max-height:300px;
+    object-fit:contain;
+    margin-top:15px;
+    border-radius:12px;
+}
+
+#status{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+
+<div class="header">
+
+<div class="logo">🐰</div>
+
+<h1>Team Bunny</h1>
+
+<p class="subtitle">
+Choose your plan
+</p>
+
+</div>
+
+
+<!-- PLAN 1 -->
+
+<div class="plan">
+
+<h2>Premium Plan</h2>
+
+<div class="price">
+3000 Points
+</div>
+
+<div class="benefit">
+⭐ Daily Points: 50
+</div>
+
+<div class="benefit">
+✅ Premium Access
+</div>
+
+<div class="benefit">
+✅ Special Rewards
+</div>
+
+<button onclick="showPayment()">
+Buy Now
+</button>
+
+</div>
+
+
+<!-- PLAN 2 -->
+
+<div class="plan">
+
+<h2>Premium Plus Plan</h2>
+
+<div class="price">
+6000 Points
+</div>
+
+<div class="benefit">
+⭐ Daily Points: 110
+</div>
+
+<div class="benefit">
+✅ Premium Access
+</div>
+
+<div class="benefit">
+✅ Special Rewards
+</div>
+
+<button onclick="showPayment()">
+Buy Now
+</button>
+
+</div>
+
+
+<!-- PAYMENT -->
+
+<div id="payment">
+
+<h2>Payment Details</h2>
+
+<div class="info">
+
+JazzCash Number<br>
+<b>03135676687</b>
+
+<br><br>
+
+Account Holder<br>
+<b>GULL MENA BIBI</b>
+
+</div>
+
+
+<h3>Upload Screenshot</h3>
+
+<input
+type="file"
+id="screenshot"
+accept="image/*"
+onchange="previewImage()"
+>
+
+
+<img id="preview">
+
+
+<button
+id="sendButton"
+onclick="sendScreenshot()"
+>
+
+Send Screenshot
+
+</button>
+
+
+<div id="status"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const username =
+localStorage.getItem("teamBunnyUsername");
+
+
+function showPayment(){
+
+document.getElementById("payment").style.display="block";
+
+window.scrollTo({
+
+top:document.body.scrollHeight,
+
+behavior:"smooth"
+
+});
+
+}
+
+
+function previewImage(){
+
+const file =
+document.getElementById("screenshot").files[0];
+
+const preview =
+document.getElementById("preview");
+
+if(!file){
+
+preview.style.display="none";
+
+return;
+
+}
+
+const reader =
+new FileReader();
+
+reader.onload=function(e){
+
+preview.src=e.target.result;
+
+preview.style.display="block";
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+
+function sendScreenshot(){
+
+const file =
+document.getElementById("screenshot").files[0];
+
+const status =
+document.getElementById("status");
+
+const button =
+document.getElementById("sendButton");
+
+
+if(!file){
+
+status.style.color="#e74c3c";
+
+status.textContent=
+"Please select a screenshot first.";
+
+return;
+
+}
+
+
+if(!username){
+
+status.style.color="#e74c3c";
+
+status.textContent=
+"Please login first.";
+
+return;
+
+}
+
+
+const reader =
+new FileReader();
+
+
+button.disabled=true;
+
+button.textContent="Sending...";
+
+status.style.color="#777";
+
+status.textContent=
+"Uploading screenshot...";
+
+
+reader.onload=function(e){
+
+fetch("/api/upload-screenshot",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+username:username,
+
+image:e.target.result
+
+})
+
+})
+
+.then(response=>response.json())
+
+.then(data=>{
+
+if(data.success){
+
+status.style.color="#27ae60";
+
+status.innerHTML=
+"Screenshot received successfully.<br><br>Your account will be verified within 5 to 30 minutes.";
+
+button.textContent=
+"Screenshot Sent";
+
+}else{
+
+status.style.color="#e74c3c";
+
+status.textContent=
+data.message || "Upload failed.";
+
+button.disabled=false;
+
+button.textContent=
+"Send Screenshot";
+
+}
+
+})
+
+.catch(error=>{
+
+console.log(error);
+
+status.style.color="#e74c3c";
+
+status.textContent=
+"Server connection failed.";
+
+button.disabled=false;
+
+button.textContent=
+"Send Screenshot";
+
+});
+
+};
+
+
+reader.readAsDataURL(file);
+
+}
+
+</script>
+
+</body>
+</html>

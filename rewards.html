@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Bunny - Rewards</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#f4f6fb;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:550px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin:20px 0 25px;
+}
+
+.logo{
+    font-size:60px;
+}
+
+h1{
+    color:#6a11cb;
+    margin:8px 0;
+}
+
+.subtitle{
+    color:#777;
+}
+
+.points-card{
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+    color:white;
+    padding:30px 20px;
+    border-radius:22px;
+    text-align:center;
+    margin-bottom:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+
+.points-label{
+    font-size:16px;
+    opacity:.9;
+}
+
+.points{
+    font-size:48px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.reward{
+    background:white;
+    padding:22px;
+    border-radius:20px;
+    margin-bottom:15px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+.reward h2{
+    color:#333;
+    margin-bottom:8px;
+}
+
+.reward p{
+    color:#777;
+    line-height:1.5;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:0;
+    border-radius:12px;
+    background:#6a11cb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.back{
+    background:#2575fc;
+}
+
+.loading{
+    text-align:center;
+    color:#777;
+    margin:15px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="logo">🏆</div>
+
+        <h1>Rewards</h1>
+
+        <p class="subtitle">
+            Your Team Bunny points
+        </p>
+
+    </div>
+
+
+    <div class="points-card">
+
+        <div class="points-label">
+            Available Points
+        </div>
+
+        <div class="points" id="points">
+            0
+        </div>
+
+    </div>
+
+
+    <div class="reward">
+
+        <h2>🎁 Invite Reward</h2>
+
+        <p>
+            Invite a new member successfully
+            and earn 50 virtual points.
+        </p>
+
+    </div>
+
+
+    <div class="reward">
+
+        <h2>▶️ Video Reward</h2>
+
+        <p>
+            Complete the available video task
+            to receive 20 virtual points.
+        </p>
+
+        <button onclick="location.href='video.html'">
+            Watch Video
+        </button>
+
+    </div>
+
+
+    <div class="reward">
+
+        <h2>⭐ Welcome Points</h2>
+
+        <p>
+            New accounts receive 20 virtual
+            points when created.
+        </p>
+
+    </div>
+
+
+    <div class="loading" id="loading">
+        Loading points...
+    </div>
+
+
+    <button class="back"
+            onclick="location.href='dashboard.html'">
+        Back to Dashboard
+    </button>
+
+</div>
+
+
+<script>
+
+const username =
+    localStorage.getItem("teamBunnyUsername");
+
+if(!username){
+
+    location.href = "index.html";
+
+}
+
+
+function loadPoints(){
+
+    fetch(
+        "/api/user?username=" +
+        encodeURIComponent(username)
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            document.getElementById("points")
+                .textContent = data.points;
+
+            localStorage.setItem(
+                "teamBunnyPoints",
+                data.points
+            );
+
+            document.getElementById("loading")
+                .textContent = "";
+
+        }else{
+
+            localStorage.clear();
+            location.href = "index.html";
+
+        }
+
+    })
+
+    .catch(error => {
+
+        document.getElementById("loading")
+            .textContent =
+            "Server connection failed.";
+
+        console.log(error);
+
+    });
+
+}
+
+
+loadPoints();
+
+</script>
+
+</body>
+</html>

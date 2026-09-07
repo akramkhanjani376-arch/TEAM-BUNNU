@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Bunny - Create Account</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#2575fc,#6a11cb);
+    padding:20px;
+}
+
+.box{
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:30px;
+    border-radius:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
+}
+
+.logo{
+    text-align:center;
+    font-size:65px;
+}
+
+h1{
+    text-align:center;
+    color:#6a11cb;
+    margin:10px 0 5px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    margin:8px 0;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:12px;
+    border:0;
+    border-radius:12px;
+    background:#6a11cb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+}
+
+.login{
+    background:#2575fc;
+}
+
+.message{
+    text-align:center;
+    margin-top:15px;
+    color:#e74c3c;
+    min-height:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="logo">🐰</div>
+
+    <h1>Team Bunny</h1>
+
+    <p class="subtitle">
+        Create your account
+    </p>
+
+    <input
+        type="text"
+        id="username"
+        placeholder="Username"
+        autocomplete="username"
+    >
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Email"
+        autocomplete="email"
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        autocomplete="new-password"
+    >
+
+    <input
+        type="text"
+        id="inviteCode"
+        placeholder="Invite Code (optional)"
+    >
+
+    <button onclick="signup()">
+        Create Account
+    </button>
+
+    <button class="login" onclick="location.href='index.html'">
+        Back to Login
+    </button>
+
+    <div class="message" id="message"></div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(location.search);
+
+const ref = params.get("ref");
+
+if(ref){
+    document.getElementById("inviteCode").value = ref;
+}
+
+
+function signup(){
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const inviteCode =
+        document.getElementById("inviteCode").value.trim();
+
+    const message =
+        document.getElementById("message");
+
+    message.textContent = "";
+
+    if(!username || !email || !password){
+
+        message.textContent =
+            "Please fill all required fields.";
+
+        return;
+    }
+
+    if(username.length < 3){
+
+        message.textContent =
+            "Username must be at least 3 characters.";
+
+        return;
+    }
+
+    if(password.length < 4){
+
+        message.textContent =
+            "Password must be at least 4 characters.";
+
+        return;
+    }
+
+    fetch("/api/signup",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            username:username,
+            email:email,
+            password:password,
+            inviteCode:inviteCode
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            localStorage.setItem(
+                "teamBunnyUsername",
+                data.username
+            );
+
+            localStorage.setItem(
+                "teamBunnyEmail",
+                data.email
+            );
+
+            localStorage.setItem(
+                "teamBunnyPoints",
+                data.points
+            );
+
+            location.href =
+                "dashboard.html";
+
+        }else{
+
+            message.textContent =
+                data.message;
+
+        }
+
+    })
+
+    .catch(error => {
+
+        message.textContent =
+            "Server connection failed.";
+
+        console.log(error);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>

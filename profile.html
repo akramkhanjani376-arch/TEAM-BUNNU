@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Bunny - Profile</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#f4f6fb;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:500px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin:20px 0 25px;
+}
+
+.avatar{
+    width:90px;
+    height:90px;
+    margin:auto;
+    border-radius:50%;
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:48px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
+
+h1{
+    color:#6a11cb;
+    margin-top:15px;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:15px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:15px 0;
+    border-bottom:1px solid #eee;
+}
+
+.row:last-child{
+    border-bottom:0;
+}
+
+.label{
+    color:#777;
+}
+
+.value{
+    color:#333;
+    font-weight:bold;
+    text-align:right;
+    word-break:break-all;
+}
+
+.points{
+    color:#6a11cb;
+    font-size:24px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:12px;
+    background:#2575fc;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.logout{
+    background:#e74c3c;
+}
+
+.loading{
+    text-align:center;
+    color:#777;
+    margin:15px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="avatar">🐰</div>
+
+        <h1>My Profile</h1>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="row">
+            <div class="label">Username</div>
+            <div class="value" id="username">Loading...</div>
+        </div>
+
+        <div class="row">
+            <div class="label">Email</div>
+            <div class="value" id="email">Loading...</div>
+        </div>
+
+        <div class="row">
+            <div class="label">Points</div>
+            <div class="value points" id="points">0</div>
+        </div>
+
+        <div class="row">
+            <div class="label">Invite Code</div>
+            <div class="value" id="inviteCode">Loading...</div>
+        </div>
+
+    </div>
+
+
+    <div class="loading" id="loading">
+        Loading profile...
+    </div>
+
+
+    <button onclick="location.href='dashboard.html'">
+        Back to Dashboard
+    </button>
+
+    <button class="logout" onclick="logout()">
+        Logout
+    </button>
+
+</div>
+
+
+<script>
+
+const currentUsername =
+    localStorage.getItem("teamBunnyUsername");
+
+if(!currentUsername){
+
+    location.href = "index.html";
+
+}
+
+
+function loadProfile(){
+
+    fetch(
+        "/api/user?username=" +
+        encodeURIComponent(currentUsername)
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            document.getElementById("username")
+                .textContent = data.username;
+
+            document.getElementById("email")
+                .textContent = data.email;
+
+            document.getElementById("points")
+                .textContent = data.points;
+
+            document.getElementById("inviteCode")
+                .textContent = data.invite_code;
+
+            localStorage.setItem(
+                "teamBunnyEmail",
+                data.email
+            );
+
+            localStorage.setItem(
+                "teamBunnyPoints",
+                data.points
+            );
+
+            document.getElementById("loading")
+                .textContent = "";
+
+        }else{
+
+            localStorage.clear();
+            location.href = "index.html";
+
+        }
+
+    })
+
+    .catch(error => {
+
+        document.getElementById("loading")
+            .textContent =
+            "Server connection failed.";
+
+        console.log(error);
+
+    });
+
+}
+
+
+function logout(){
+
+    localStorage.removeItem("teamBunnyUsername");
+    localStorage.removeItem("teamBunnyEmail");
+    localStorage.removeItem("teamBunnyPoints");
+
+    location.href = "index.html";
+
+}
+
+
+loadProfile();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Bunny - Invite</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:#f4f6fb;
+    padding:20px;
+}
+
+.box{
+    width:100%;
+    max-width:500px;
+    margin:30px auto;
+    background:white;
+    padding:30px 20px;
+    border-radius:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.1);
+    text-align:center;
+}
+
+.logo{
+    font-size:65px;
+}
+
+h1{
+    color:#6a11cb;
+    margin:10px 0;
+}
+
+.subtitle{
+    color:#777;
+    margin-bottom:25px;
+}
+
+.code-box{
+    background:#f1ecff;
+    border:2px dashed #6a11cb;
+    border-radius:15px;
+    padding:20px;
+    margin:20px 0;
+}
+
+.code-label{
+    color:#777;
+    font-size:14px;
+    margin-bottom:8px;
+}
+
+.code{
+    color:#6a11cb;
+    font-size:24px;
+    font-weight:bold;
+    word-break:break-all;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:12px;
+    margin-top:12px;
+    background:#6a11cb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+}
+
+.back{
+    background:#2575fc;
+}
+
+.message{
+    margin-top:15px;
+    color:#27ae60;
+    min-height:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="logo">🐰</div>
+
+    <h1>Invite Friends</h1>
+
+    <p class="subtitle">
+        Share your invite code with your friends
+    </p>
+
+    <div class="code-box">
+
+        <div class="code-label">
+            Your Invite Code
+        </div>
+
+        <div class="code" id="inviteCode">
+            Loading...
+        </div>
+
+    </div>
+
+    <button onclick="copyCode()">
+        Copy Invite Code
+    </button>
+
+    <button onclick="copyLink()">
+        Copy Invite Link
+    </button>
+
+    <button class="back" onclick="location.href='dashboard.html'">
+        Back to Dashboard
+    </button>
+
+    <div class="message" id="message"></div>
+
+</div>
+
+
+<script>
+
+const username =
+    localStorage.getItem("teamBunnyUsername");
+
+if(!username){
+
+    location.href = "index.html";
+
+}
+
+
+let inviteCode = "";
+
+
+function loadInviteCode(){
+
+    fetch(
+        "/api/user?username=" +
+        encodeURIComponent(username)
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            inviteCode = data.invite_code;
+
+            document.getElementById(
+                "inviteCode"
+            ).textContent = inviteCode;
+
+        }else{
+
+            location.href = "index.html";
+
+        }
+
+    })
+
+    .catch(error => {
+
+        document.getElementById(
+            "inviteCode"
+        ).textContent = "Connection failed.";
+
+        console.log(error);
+
+    });
+
+}
+
+
+function copyCode(){
+
+    if(!inviteCode) return;
+
+    navigator.clipboard.writeText(inviteCode)
+    .then(() => {
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Invite code copied!";
+
+    });
+
+}
+
+
+function copyLink(){
+
+    if(!inviteCode) return;
+
+    const link =
+        location.origin +
+        "/signup.html?ref=" +
+        encodeURIComponent(inviteCode);
+
+    navigator.clipboard.writeText(link)
+    .then(() => {
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Invite link copied!";
+
+    });
+
+}
+
+
+loadInviteCode();
+
+</script>
+
+</body>
+</html>
